@@ -1,4 +1,39 @@
 
+# from openai import OpenAI
+# from config import openai_api_key
+# from bot_config.vector_store import query_similar_documents
+
+# client = OpenAI(api_key=openai_api_key)
+
+# def build_prompt(question):
+#     relevant_chunks = query_similar_documents(question)
+#     context = "\n\n".join(relevant_chunks)
+#     return f"""
+# Bạn là Meoz - trợ lý BI thân thiện.
+# Hãy trả lời câu hỏi dựa trên thông tin sau:
+
+# --- Kiến thức nội bộ ---
+# {context}
+
+# --- Câu hỏi ---
+# {question}
+# """
+
+# def ask(question):
+#     prompt = build_prompt(question)
+#     print("\n===== PROMPT GỬI GPT =====\n")
+#     print(prompt[:1500])
+#     print("==========================\n")
+
+#     response = client.chat.completions.create(
+#         model="gpt-4o-mini",
+#         messages=[
+#             {"role": "system", "content": "You are Meoz - BI Assistant."},
+#             {"role": "user", "content": prompt}
+#         ]
+#     )
+#     return response.choices[0].message.content.strip()
+
 from openai import OpenAI
 from config import openai_api_key
 from bot_config.vector_store import query_similar_documents
@@ -7,10 +42,20 @@ client = OpenAI(api_key=openai_api_key)
 
 def build_prompt(question):
     relevant_chunks = query_similar_documents(question)
+
+    if not relevant_chunks:
+        return f"""
+            You arr Meoz -  friendly BI Assistant.
+            Hiện tại bạn không có dữ liệu nội bộ liên quan đến câu hỏi sau, hãy trả lời một cách lịch sự hoặc đề xuất người dùng cung cấp thêm thông tin:
+
+--- Câu hỏi ---
+{question}
+"""
+
     context = "\n\n".join(relevant_chunks)
     return f"""
-Bạn là Meoz - trợ lý BI thân thiện.
-Hãy trả lời câu hỏi dựa trên thông tin sau:
+        You arr Meoz -  the best BI Assistant.
+        Hãy trả lời câu hỏi dựa trên thông tin sau:
 
 --- Kiến thức nội bộ ---
 {context}
@@ -33,4 +78,3 @@ def ask(question):
         ]
     )
     return response.choices[0].message.content.strip()
-
