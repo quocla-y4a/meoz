@@ -4,8 +4,13 @@ from openai import OpenAI
 from config import openai_api_key
 
 # Khởi tạo client cho Chroma (chuẩn mới nhất)
-chroma_client = chromadb.PersistentClient(path=os.path.join(os.path.dirname(__file__), "../.chroma_store"))
+# chroma_client = chromadb.PersistentClient(path=os.path.join(os.path.dirname(__file__), "../.chroma_store"))
+from chromadb.config import Settings
 
+chroma_client = chromadb.Client(Settings(
+    chroma_db_impl="duckdb+parquet",
+    persist_directory=None
+))
 # Định nghĩa collection
 collection = chroma_client.get_or_create_collection(name="meoz_knowledge")
 
