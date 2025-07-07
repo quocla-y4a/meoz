@@ -45,24 +45,26 @@ def build_prompt(question):
 
     if not relevant_chunks:
         return f"""
-            Bạn là Meoz - trợ lý BI thân thiện.
-            Hiện tại bạn không có dữ liệu nội bộ liên quan đến câu hỏi sau, hãy trả lời một cách lịch sự hoặc đề xuất người dùng cung cấp thêm thông tin:
+            You are Meoz - BI Assistant.
+            Currently, you do not have any internal data related to the following question. Please respond politely or suggest the user provide more information:
 
---- Câu hỏi ---
+--- Question ---
 {question}
 """
 
     context = "\n\n".join(relevant_chunks)
     return f"""
-        Bạn là Meoz - trợ lý BI thân thiện.
-        Dựa trên các thông tin nội bộ sau, hãy trả lời ngắn gọn, chính xác, dễ hiểu và bám sát nội dung được cung cấp. Không suy đoán quá mức.
+        You are Meoz - BI Assistant.
+        Base on the internal information below, please answer the question concisely, accurately, and understandably, sticking closely to the provided content. Do not make excessive assumptions.
 
---- Kiến thức nội bộ ---
+--- Base Knowledge ---
 {context}
 
---- Câu hỏi ---
+--- Question ---
 {question}
 """
+# Base on the internal information below, please answer the question concisely, accurately, and understandably, sticking closely to the provided content. Do not make excessive assumptions.
+
 
 def ask(question):
     prompt = build_prompt(question)

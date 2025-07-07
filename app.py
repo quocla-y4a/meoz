@@ -102,7 +102,6 @@ user_input = st.chat_input("Would you like to ask Meoz something ...")
 if user_input:
     now = datetime.now().strftime("%H:%M")
     
-    # Hiện lại câu hỏi của user ngay lập tức
     st.markdown(f"""
         <div style="text-align: right;">
             <div class="timestamp">🧑‍💼 {now}</div>
@@ -117,7 +116,6 @@ if user_input:
         full_reply = ask(user_input)
         reply_time = datetime.now().strftime("%H:%M")
 
-        # Typing effect with st.empty()
         placeholder = st.empty()
         simulated = ""
         for char in full_reply:
@@ -130,7 +128,6 @@ if user_input:
             """, unsafe_allow_html=True)
             time.sleep(0.001)
 
-        # Final display without cursor
         placeholder.markdown(f"""
             <div style="text-align: left;">
                 <div class="timestamp">🤖 {reply_time}</div>
@@ -138,5 +135,4 @@ if user_input:
             </div>
         """, unsafe_allow_html=True)
 
-    # Lưu lại vào session để giữ state
     st.session_state.messages.append({"role": "assistant", "content": full_reply, "time": reply_time})
