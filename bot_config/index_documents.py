@@ -1,0 +1,52 @@
+import os
+import pickle
+import faiss
+from PyPDF2 import PdfReader
+from sentence_transformers import SentenceTransformer
+
+INDEX_PATH = "faiss_store/index.faiss"
+META_PATH = "faiss_store/meta.pkl"
+DATA_DIR = "knowledge_base"
+
+def load_documents(folder_path):
+    docs = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".pdf"):
+            filepath = os.path.join(folder_path, filename)
+            reader = PdfReader(filepath)
+            text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+            chunks = split_text(text, chunk_size=1000)
+
+            for i, chunk in enumerate(chunks):
+                docs.append({
+                    "id": f"{filename}_{i}",
+                    "content": chunk,
+                    "metadata": {"source": filename}
+                })
+    return docs
+
+def split_text(text, chunk_size=1000):
+    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+
+def build_faiss_index():
+    docs = load_documents(DATA_DIR)
+    if not docs:
+        print("⚠️ Không tìm thấy file nào trong thư mục knowledge_base.")
+        return
+
+    texts = [doc["content"] for doc in docs]
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    embeddings = model.encode(texts)
+
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(embeddings)
+
+    os.makedirs("faiss_store", exist_ok=True)
+    faiss.write_index(index, INDEX_PATH)
+    with open(META_PATH, "wb") as f:
+        pickle.dump([doc["metadata"] for doc in docs], f)
+
+    print(f"✅ Indexed {len(texts)} đoạn từ {len(docs)} tài liệu.")
+
+if __name__ == "__main__":
+    build_faiss_index()
