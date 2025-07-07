@@ -91,7 +91,7 @@ def add_documents(docs):
     with open(data_path, "wb") as f:
         pickle.dump(documents, f)
 
-def query_similar_documents(query, top_k=5):
+def query_similar_documents(query, top_k=8):
     if len(documents) == 0:
         print("⚠️ Chưa có dữ liệu trong FAISS index.")
         return []

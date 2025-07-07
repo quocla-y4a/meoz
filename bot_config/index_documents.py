@@ -1,3 +1,59 @@
+# import os
+# import pickle
+# import faiss
+# from PyPDF2 import PdfReader
+# from sentence_transformers import SentenceTransformer
+
+# INDEX_PATH = "faiss_store/index.faiss"
+# META_PATH = "faiss_store/meta.pkl"
+# DATA_DIR = "knowledge_base"
+
+# def load_documents(folder_path):
+#     docs = []
+#     for filename in os.listdir(folder_path):
+#         if filename.endswith(".pdf"):
+#             filepath = os.path.join(folder_path, filename)
+#             reader = PdfReader(filepath)
+#             text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+#             chunks = split_text(text, chunk_size=200)
+
+#             for i, chunk in enumerate(chunks):
+#                 docs.append({
+#                     "id": f"{filename}_{i}",
+#                     "content": chunk,
+#                     "metadata": {"source": filename}
+#                 })
+#     return docs
+
+# def split_text(text, chunk_size=200):
+#     return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+
+# def build_faiss_index():
+#     docs = load_documents(DATA_DIR)
+#     if not docs:
+#         print("⚠️ Không tìm thấy file nào trong thư mục knowledge_base.")
+#         return
+
+#     texts = [doc["content"] for doc in docs]
+#     model = SentenceTransformer("all-MiniLM-L6-v2")
+#     embeddings = model.encode(texts)
+
+#     index = faiss.IndexFlatL2(embeddings.shape[1])
+#     index.add(embeddings)
+
+#     os.makedirs("faiss_store", exist_ok=True)
+#     faiss.write_index(index, INDEX_PATH)
+#     with open(META_PATH, "wb") as f:
+#         pickle.dump([doc["metadata"] for doc in docs], f)
+
+#     print(f"✅ Indexed {len(texts)} đoạn từ {len(docs)} tài liệu.")
+
+# if __name__ == "__main__":
+#     build_faiss_index()
+
+
+# index_documents.py
+
 import os
 import pickle
 import faiss
@@ -8,6 +64,18 @@ INDEX_PATH = "faiss_store/index.faiss"
 META_PATH = "faiss_store/meta.pkl"
 DATA_DIR = "knowledge_base"
 
+CHUNK_SIZE = 200      # Số ký tự mỗi đoạn
+CHUNK_OVERLAP = 50    # Số ký tự chồng lặp giữa các đoạn
+
+def split_text(text, chunk_size=200, overlap=50):
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        chunks.append(text[start:end])
+        start += chunk_size - overlap  # di chuyển con trỏ có overlap
+    return chunks
+
 def load_documents(folder_path):
     docs = []
     for filename in os.listdir(folder_path):
@@ -15,7 +83,7 @@ def load_documents(folder_path):
             filepath = os.path.join(folder_path, filename)
             reader = PdfReader(filepath)
             text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
-            chunks = split_text(text, chunk_size=1000)
+            chunks = split_text(text, CHUNK_SIZE, CHUNK_OVERLAP)
 
             for i, chunk in enumerate(chunks):
                 docs.append({
@@ -25,9 +93,6 @@ def load_documents(folder_path):
                 })
     return docs
 
-def split_text(text, chunk_size=1000):
-    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
-
 def build_faiss_index():
     docs = load_documents(DATA_DIR)
     if not docs:
@@ -35,6 +100,7 @@ def build_faiss_index():
         return
 
     texts = [doc["content"] for doc in docs]
+    metadatas = [doc["metadata"] for doc in docs]
     model = SentenceTransformer("all-MiniLM-L6-v2")
     embeddings = model.encode(texts)
 
@@ -44,9 +110,12 @@ def build_faiss_index():
     os.makedirs("faiss_store", exist_ok=True)
     faiss.write_index(index, INDEX_PATH)
     with open(META_PATH, "wb") as f:
-        pickle.dump([doc["metadata"] for doc in docs], f)
+        pickle.dump({
+            "texts": texts,
+            "metadatas": metadatas
+        }, f)
 
-    print(f"✅ Indexed {len(texts)} đoạn từ {len(docs)} tài liệu.")
+    print(f"✅ Indexed {len(texts)} đoạn từ {len(set(d['metadata']['source'] for d in docs))} tài liệu.")
 
 if __name__ == "__main__":
     build_faiss_index()
