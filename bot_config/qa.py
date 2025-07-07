@@ -45,7 +45,7 @@ def build_prompt(question):
 
     if not relevant_chunks:
         return f"""
-            You arr Meoz -  friendly BI Assistant.
+            Bạn là Meoz - trợ lý BI thân thiện.
             Hiện tại bạn không có dữ liệu nội bộ liên quan đến câu hỏi sau, hãy trả lời một cách lịch sự hoặc đề xuất người dùng cung cấp thêm thông tin:
 
 --- Câu hỏi ---
@@ -54,8 +54,8 @@ def build_prompt(question):
 
     context = "\n\n".join(relevant_chunks)
     return f"""
-        You arr Meoz -  the best BI Assistant.
-        Hãy trả lời câu hỏi dựa trên thông tin sau:
+        Bạn là Meoz - trợ lý BI thân thiện.
+        Dựa trên các thông tin nội bộ sau, hãy trả lời ngắn gọn, chính xác, dễ hiểu và bám sát nội dung được cung cấp. Không suy đoán quá mức.
 
 --- Kiến thức nội bộ ---
 {context}
