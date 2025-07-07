@@ -8,7 +8,6 @@ requests
 streamlit-authenticator  # if you are using it
 python-dotenv
 toml
-openai
 google-api-python-client 
 google-auth 
 google-auth-httplib2 
@@ -17,9 +16,10 @@ pandas
 gspread
 oauth2client
 plotly
-chromadb==0.4.14
-uvicorn
-fastapi
-h11
-lz4
-duckdb
+# chromadb==0.4.14
+PyPDF2
+faiss-cpu
+sentence-transformers
+streamlit-chat
+fitz
+PyMuPDF
