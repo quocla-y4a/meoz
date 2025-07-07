@@ -64,7 +64,7 @@ INDEX_PATH = "faiss_store/index.faiss"
 META_PATH = "faiss_store/meta.pkl"
 DATA_DIR = "knowledge_base"
 
-CHUNK_SIZE = 200      # Số ký tự mỗi đoạn
+CHUNK_SIZE = 500      # Số ký tự mỗi đoạn
 CHUNK_OVERLAP = 50    # Số ký tự chồng lặp giữa các đoạn
 
 def split_text(text, chunk_size=200, overlap=50):
