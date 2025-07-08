@@ -73,7 +73,7 @@ def split_text(text, chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
     while start < len(text):
         end = start + chunk_size
         chunks.append(text[start:end])
-        start += chunk_size - overlap  # di chuyển con trỏ có overlap
+        start += chunk_size - overlap
     return chunks
 
 def load_documents(folder_path):
@@ -96,7 +96,7 @@ def load_documents(folder_path):
 def build_faiss_index():
     docs = load_documents(DATA_DIR)
     if not docs:
-        print("⚠️ Không tìm thấy file nào trong thư mục knowledge_base.")
+        print("There is no file in folder knowledge_base.")
         return
 
     texts = [doc["content"] for doc in docs]
@@ -115,7 +115,7 @@ def build_faiss_index():
             "metadatas": metadatas
         }, f)
 
-    print(f"✅ Indexed {len(texts)} đoạn từ {len(set(d['metadata']['source'] for d in docs))} tài liệu.")
+    print(f"=>> Indexed {len(texts)} pharaphase from {len(set(d['metadata']['source'] for d in docs))} document.")
 
 if __name__ == "__main__":
     build_faiss_index()
