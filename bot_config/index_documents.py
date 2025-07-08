@@ -101,8 +101,11 @@ def build_faiss_index():
 
     texts = [doc["content"] for doc in docs]
     metadatas = [doc["metadata"] for doc in docs]
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    embeddings = model.encode(texts)
+    # model = SentenceTransformer("all-MiniLM-L6-v2")
+    model = SentenceTransformer("BAAI/bge-small-en-v1.5")  # hoặc multi-qa-MiniLM-L6-cos-v1
+
+    # embeddings = model.encode(texts)
+    embeddings = model.encode(texts, normalize_embeddings=True)
 
     index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings)

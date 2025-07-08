@@ -69,7 +69,8 @@ from sentence_transformers import SentenceTransformer
 index_path = os.path.join(os.path.dirname(__file__), "faiss_index")
 data_path = os.path.join(os.path.dirname(__file__), "faiss_data.pkl")
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("BAAI/bge-small-en-v1.5")  # hoặc multi-qa-MiniLM-L6-cos-v1
 
 if os.path.exists(index_path):
     index = faiss.read_index(index_path)
